@@ -109,7 +109,7 @@ protocol = [
 ["set <JAIL> unbanip [--report-absent] <IP> ... <IP>", "manually Unban <IP> in <JAIL>"], 
 ["set <JAIL> maxretry <RETRY>", "sets the number of failures <RETRY> before banning the host for <JAIL>"], 
 ["set <JAIL> maxmatches <INT>", "sets the max number of matches stored in memory per ticket in <JAIL>"], 
-["set <JAIL> maxlines <LINES>", "sets the number of <LINES> to buffer for regex search for <JAIL>"], 
+["set <JAIL> maxlines <INT>", "sets the maximum number of lines to buffer for matching failures for <JAIL>"],
 ["set <JAIL> addaction <ACT>[ <PYTHONFILE> <JSONKWARGS>]", "adds a new action named <ACT> for <JAIL>. Optionally for a Python based action, a <PYTHONFILE> and <JSONKWARGS> can be specified, else will be a Command Action"], 
 ["set <JAIL> delaction <ACT>", "removes the action <ACT> from <JAIL>"], 
 ["", "COMMAND ACTION CONFIGURATION", ""],
@@ -140,7 +140,7 @@ protocol = [
 ["get <JAIL> banip [<SEP>|--with-time]", "gets the list of of banned IP addresses for <JAIL>. Optionally the separator character ('<SEP>', default is space) or the option '--with-time' (printing the times of ban) may be specified. The IPs are ordered by end of ban."],
 ["get <JAIL> maxretry", "gets the number of failures allowed for <JAIL>"],
 ["get <JAIL> maxmatches", "gets the max number of matches stored in memory per ticket in <JAIL>"], 
-["get <JAIL> maxlines", "gets the number of lines to buffer for <JAIL>"],
+["get <JAIL> maxlines", "gets the maximum number of lines to buffer for matching failures for <JAIL>"],
 ["get <JAIL> actions", "gets a list of actions for <JAIL>"],
 ["", "COMMAND ACTION INFORMATION",""],
 ["get <JAIL> action <ACT> actionstart", "gets the start command for the action <ACT> for <JAIL>"],
@@ -153,6 +153,13 @@ protocol = [
 ["get <JAIL> actionproperties <ACT>", "gets a list of properties for the action <ACT> for <JAIL>"],
 ["get <JAIL> actionmethods <ACT>", "gets a list of methods for the action <ACT> for <JAIL>"],
 ["get <JAIL> action <ACT> <PROPERTY>", "gets the value of <PROPERTY> for the action <ACT> for <JAIL>"],
+["set <JAIL> jsonparsing yes|no|auto", "sets JSON parsing mode for <JAIL>"],
+["get <JAIL> jsonparsing", "gets JSON parsing mode for <JAIL>"],
+["set <JAIL> jsonpath <PATHS>", "sets JSONPath expressions for data extraction for <JAIL>"],
+["get <JAIL> jsonpath", "gets JSONPath expressions for data extraction for <JAIL>"],
+["set <JAIL> jsonignorepath <PATHS>", "sets JSONPath expressions for ignore conditions for <JAIL>"],
+["get <JAIL> jsonignorepath", "gets JSONPath expressions for ignore conditions for <JAIL>"],
+['', "ACTION CONFIGURATION", ""],
 ]
 
 

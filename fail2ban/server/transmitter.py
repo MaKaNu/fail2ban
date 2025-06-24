@@ -345,6 +345,22 @@ class Transmitter:
 			self.__server.setMaxLines(name, int(value))
 			if self.__quiet: return
 			return self.__server.getMaxLines(name)
+		# JSON Parsing
+		elif command[1] == "jsonparsing":
+			value = command[2]
+			self.__server.setJSONParsing(name, value)
+			if self.__quiet: return
+			return self.__server.getJSONParsing(name)
+		elif command[1] == "jsonpath":
+			value = command[2]
+			self.__server.setJSONPath(name, value)
+			if self.__quiet: return
+			return self.__server.getJSONPath(name)
+		elif command[1] == "jsonignorepath":
+			value = command[2]
+			self.__server.setJSONIgnorePath(name, value)
+			if self.__quiet: return
+			return self.__server.getJSONIgnorePath(name)
 		# command
 		elif command[1] == "bantime":
 			value = command[2]
@@ -480,6 +496,16 @@ class Transmitter:
 			return self.__server.getMaxRetry(name)
 		elif command[1] == "maxlines":
 			return self.__server.getMaxLines(name)
+		# JSON Parsing
+		elif command[1] == "jsonparsing":
+			value = command[2]
+			return self.__server.getJSONParsing(name)
+		elif command[1] == "jsonpath":
+			value = command[2]
+			return self.__server.getJSONPath(name)
+		elif command[1] == "jsonignorepath":
+			value = command[2]
+			return self.__server.getJSONIgnorePath(name)
 		# Action
 		elif command[1] == "bantime":
 			return self.__server.getBanTime(name)

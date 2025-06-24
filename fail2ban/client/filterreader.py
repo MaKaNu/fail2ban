@@ -44,6 +44,10 @@ class FilterReader(DefinitionInitConfigReader):
 		"maxlines": ["int", None],
 		"datepattern": ["string", None],
 		"journalmatch": ["string", None],
+		# JSON parsing support
+		"jsonparsing": ["string", None],
+		"jsonpath": ["string", None],
+		"jsonignorepath": ["string", None],
 	}
 
 	def setFile(self, fileName):
@@ -96,5 +100,8 @@ class FilterReader(DefinitionInitConfigReader):
 					if match == '': continue
 					stream.append(
 						["set", jailName, "addjournalmatch"] + shlex.split(match))
+			# JSON parsing options
+			elif opt in ('jsonparsing', 'jsonpath', 'jsonignorepath'):
+				stream.append(["set", jailName, opt, value])
 		return stream
 		

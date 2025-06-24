@@ -13,6 +13,8 @@ of time. Fail2Ban comes out-of-the-box ready to read many standard log files,
 such as those for sshd and Apache, and is easily configured to read any log
 file of your choosing, for any error you wish.
 
+**NEW: JSON Parsing Support** - Fail2Ban now supports JSON parsing for structured log output from modern applications like Caddy, MongoDB, GitLab, and more. This allows for more robust and maintainable filtering of JSON-formatted logs without complex regex patterns.
+
 Though Fail2Ban is able to reduce the rate of incorrect authentication
 attempts, it cannot eliminate the risk presented by weak authentication.
 Set up services to use only two factor, or public/private authentication

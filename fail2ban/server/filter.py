@@ -41,6 +41,7 @@ from .mytime import MyTime
 from .failregex import FailRegex, Regex, RegexException
 from .action import CommandAction
 from .utils import Utils
+from .jsonparser import JSONParser
 from ..helpers import getLogger, PREFER_ENC
 
 # Gets the instance of the logger.
@@ -127,6 +128,10 @@ class Filter(JailThread):
 		self.procLines = 0
 		## Thread name:
 		self.name="f2b/f."+self.jailName
+		## JSON parsing support
+		self.__jsonParser = None
+		self.__jsonPaths = []
+		self.__jsonIgnorePaths = []
 
 		self.dateDetector = DateDetector()
 		logSys.debug("Created %s", self)
@@ -144,6 +149,10 @@ class Filter(JailThread):
 		self.delFailRegex()
 		self.delIgnoreRegex()
 		self.delIgnoreIP()
+		# Clear JSON parsing parameters
+		self.__jsonPaths = []
+		self.__jsonIgnorePaths = []
+		self.__jsonParser = None
 
 	def reload(self, begin=True):
 		""" Begin or end of reloading resp. refreshing of all parameters
@@ -268,6 +277,7 @@ class Filter(JailThread):
 
 	##
 	# Get the usedns mode
+	#
 	# @return the usedns mode
 
 	def getUseDns(self):
@@ -405,6 +415,95 @@ class Filter(JailThread):
 
 	def getLogEncoding(self):
 		return self.__encoding
+
+	##
+	# Set JSON parsing mode
+	#
+	# @param value the JSON parsing mode ('yes', 'no', 'auto')
+
+	def setJSONParsing(self, value):
+		if isinstance(value, bool):
+			value = {True: 'yes', False: 'no'}[value]
+		value = value.lower()
+		if value not in ('yes', 'no', 'auto'):
+			logSys.error("Incorrect value %r specified for jsonparsing. "
+						 "Using safe 'no'", value)
+			value = 'no'
+		logSys.debug("Setting jsonparsing = %s for %s", value, self)
+		self.__jsonParsing = value
+		self._updateJSONParser()
+
+	##
+	# Get the JSON parsing mode
+	#
+	# @return the JSON parsing mode
+
+	def getJSONParsing(self):
+		return getattr(self, '__jsonParsing', 'no')
+
+	##
+	# Set JSONPath expressions for data extraction
+	#
+	# @param paths the JSONPath expressions (space-separated)
+
+	def setJSONPath(self, paths):
+		if isinstance(paths, str):
+			paths = paths.split()
+		self.__jsonPaths = paths
+		self._updateJSONParser()
+		logSys.info("  jsonpath: %s", paths)
+
+	##
+	# Get the JSONPath expressions
+	#
+	# @return the JSONPath expressions
+
+	def getJSONPath(self):
+		return self.__jsonPaths
+
+	##
+	# Set JSONPath expressions for ignore conditions
+	#
+	# @param paths the JSONPath expressions for ignore (space-separated)
+
+	def setJSONIgnorePath(self, paths):
+		if isinstance(paths, str):
+			paths = paths.split()
+		self.__jsonIgnorePaths = paths
+		self._updateJSONParser()
+		logSys.info("  jsonignorepath: %s", paths)
+
+	##
+	# Get the JSONPath ignore expressions
+	#
+	# @return the JSONPath ignore expressions
+
+	def getJSONIgnorePath(self):
+		return self.__jsonIgnorePaths
+
+	##
+	# Update JSON parser based on current settings
+	#
+
+	def _updateJSONParser(self):
+		if (getattr(self, '__jsonParsing', 'no') == 'yes' and 
+			(self.__jsonPaths or self.__jsonIgnorePaths)):
+			self.__jsonParser = JSONParser(
+				json_paths=self.__jsonPaths,
+				json_ignore_paths=self.__jsonIgnorePaths
+			)
+			logSys.debug("JSON parser initialized with paths: %s, ignore: %s", 
+						self.__jsonPaths, self.__jsonIgnorePaths)
+		else:
+			self.__jsonParser = None
+
+	##
+	# Get the JSON parser instance
+	#
+	# @return the JSON parser or None
+
+	def getJSONParser(self):
+		return self.__jsonParser
 
 	##
 	# Main loop.
@@ -633,6 +732,16 @@ class Filter(JailThread):
 		"""Split the time portion from log msg and return findFailures on them
 		"""
 		logSys.log(7, "Working on line %r", line)
+
+		# Try JSON parsing first if enabled
+		if self.__jsonParser:
+			json_data = self.__jsonParser.parse_line(line)
+			if json_data:
+				logSys.log(7, "JSON parsing successful, extracted data: %r", json_data)
+				# Create a pseudo-line from JSON data for further processing
+				json_line = " ".join([f"{k}={v}" for k, v in json_data.items()])
+				line = json_line
+				logSys.log(7, "Converted JSON to line: %r", line)
 
 		noDate = False
 		if date:

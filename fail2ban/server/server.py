@@ -504,6 +504,25 @@ class Server:
 	def getMaxLines(self, name):
 		return self.__jails[name].filter.getMaxLines()
 	
+	# JSON Parsing
+	def setJSONParsing(self, name, value):
+		self.__jails[name].filter.setJSONParsing(value)
+	
+	def getJSONParsing(self, name):
+		return self.__jails[name].filter.getJSONParsing()
+	
+	def setJSONPath(self, name, value):
+		self.__jails[name].filter.setJSONPath(value)
+	
+	def getJSONPath(self, name):
+		return self.__jails[name].filter.getJSONPath()
+	
+	def setJSONIgnorePath(self, name, value):
+		self.__jails[name].filter.setJSONIgnorePath(value)
+	
+	def getJSONIgnorePath(self, name):
+		return self.__jails[name].filter.getJSONIgnorePath()
+
 	# Action
 	def addAction(self, name, value, *args):
 		## create (or reload) jail action:
